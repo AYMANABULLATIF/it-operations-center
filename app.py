@@ -909,17 +909,24 @@ def fallback_checklist(task, language, category=None, device_type=None, departme
 
 def generate_with_gemini(prompt):
     api_key = get_secret("GEMINI_API_KEY")
+    model_name = get_secret("GEMINI_MODEL") or "gemini-2.0-flash"
+
     if not api_key:
         return None, "missing"
+
     try:
         import google.generativeai as genai
 
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+
+        model = genai.GenerativeModel(model_name)
+
         response = model.generate_content(prompt)
+
         return response.text, None
-    except Exception:
-        return None, "error"
+
+    except Exception as e:
+        return None, str(e)
 
 
 def render_ai_assistant():
